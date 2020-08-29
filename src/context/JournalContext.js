@@ -3,15 +3,6 @@ import jsonServer from "../api/jsonServer";
 
 const journalReducer = (journals, action) => {
   switch (action.type) {
-    case "addJournal":
-      return [
-        ...journals,
-        {
-          id: Math.floor(Math.random() * 99999),
-          title: action.payload.title,
-          content: action.payload.content,
-        },
-      ];
     case "editJournal":
       return journals.map((journal) => {
         if (journal.id === action.payload.id) {
@@ -30,6 +21,13 @@ const journalReducer = (journals, action) => {
   }
 };
 
+const addJournal = (dispatch) => {
+  // This function returns another function that will call the dispatch with appropriate action type.
+  return async (title, content, callBack) => {
+    const response = await jsonServer.post("/journals", { title, content });
+  };
+};
+
 const getJournals = (dispatch) => {
   return async () => {
     const response = await jsonServer.get("/journals");
@@ -38,21 +36,10 @@ const getJournals = (dispatch) => {
   };
 };
 
-const addJournal = (dispatch) => {
-  // This function returns another function that will call the dispatch with appropriate action type.
-  return async (title, content, callBack) => {
-    const response = await jsonServer.post("/journals", { title, content });
-
-    dispatch({ type: "addJournal", payload: { title, content } });
-    if (callBack) {
-      callBack();
-    }
-  };
-};
-
 const editJournal = (dispatch) => {
   // This function returns another function that will call the dispatch with appropriate action type.
-  return (id, title, content, callBack) => {
+  return async (id, title, content, callBack) => {
+    await jsonServer.put(`journals/${id}`, { title, content });
     dispatch({ type: "editJournal", payload: { id, title, content } });
     if (callBack) {
       callBack();
@@ -61,7 +48,9 @@ const editJournal = (dispatch) => {
 };
 
 const deleteJournal = (dispatch) => {
-  return (id) => {
+  return async (id) => {
+    await jsonServer.delete(`journals/${id}`);
+    // we can either dispatch an action or load the list on the index screen
     dispatch({ type: "deleteJournal", payload: id });
   };
 };

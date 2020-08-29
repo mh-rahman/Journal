@@ -6,24 +6,29 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import { Context as JournalContext, Provider } from "../context/JournalContext";
+import { Context as JournalContext } from "../context/JournalContext";
 import { Feather } from "@expo/vector-icons";
 
 const IndexScreen = ({ navigation }) => {
   const { state, getJournals, deleteJournal } = useContext(JournalContext);
 
-  //second argument = []  implies run the useEffect only once
+  // second argument = []  implies run the useEffect only once
+  // second argument = [] run whenever the index screen become the main focus
   useEffect(() => {
     getJournals();
+    const listener = navigation.addListener("didFocus", () => {
+      getJournals();
+    });
+    return () => {
+      listener.remove();
+    };
   }, []);
 
   return (
     <View>
       <FlatList
         data={state}
-        keyExtractor={(journal) => {
-          toString(journal.id);
-        }}
+        keyExtractor={(journal) => journal.title}
         renderItem={({ item }) => {
           return (
             <TouchableOpacity
