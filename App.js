@@ -2,11 +2,17 @@ import React from "react";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import IndexScreen from "./src/screens/IndexScreen";
+import ShowJournal from "./src/screens/ShowJournal";
+import CreateJournal from "./src/screens/CreateJournal";
+import EditJournal from "./src/screens/EditJournal";
 import { Provider as JournalProvider } from "./src/context/JournalContext";
 
 const navigator = createStackNavigator(
   {
     Index: IndexScreen,
+    Show: ShowJournal,
+    Create: CreateJournal,
+    Edit: EditJournal,
   },
   {
     initialRouteName: "Index",

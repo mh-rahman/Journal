@@ -9,7 +9,7 @@ export default (reducer, actions, initialState) => {
   const Provider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    // actions === {addJournal : (dispatch) => a fucntion that does something}
+    // actions === {addJournal : (dispatch) => a fucntion that does something with dispatch object}
     const boundActions = {};
 
     for (let action in actions) {

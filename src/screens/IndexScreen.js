@@ -1,31 +1,56 @@
-import React, { useContext } from "react";
-import { View, Text, StyleSheet, FlatList, Button } from "react-native";
+import React, { useContext, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { Context as JournalContext, Provider } from "../context/JournalContext";
 import { Feather } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
-const IndexScreen = () => {
-  const { state, addJournal, deleteJournal } = useContext(JournalContext);
+const IndexScreen = ({ navigation }) => {
+  const { state, getJournals, deleteJournal } = useContext(JournalContext);
+
+  //second argument = []  implies run the useEffect only once
+  useEffect(() => {
+    getJournals();
+  }, []);
 
   return (
     <View>
-      <Button title="New Journal" onPress={addJournal} />
       <FlatList
         data={state}
-        keyExtractor={(journal) => journal.title}
+        keyExtractor={(journal) => {
+          toString(journal.id);
+        }}
         renderItem={({ item }) => {
           return (
-            <View style={styles.row}>
-              <Text style={styles.titleStyle}>{item.title}</Text>
-              <TouchableOpacity onPress={() => deleteJournal(item.id)}>
-                <Feather style={styles.iconStyle} name="trash" />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Show", { id: item.id })}
+            >
+              <View style={styles.row}>
+                <Text style={styles.titleStyle}>{item.title}</Text>
+                <TouchableOpacity onPress={() => deleteJournal(item.id)}>
+                  <Feather style={styles.iconStyle} name="trash" />
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
           );
         }}
       />
     </View>
   );
+};
+
+IndexScreen.navigationOptions = ({ navigation }) => {
+  return {
+    headerRight: () => (
+      <TouchableOpacity onPress={() => navigation.navigate("Create")}>
+        <Feather name="plus" size={30} />
+      </TouchableOpacity>
+    ),
+  };
 };
 
 const styles = StyleSheet.create({
